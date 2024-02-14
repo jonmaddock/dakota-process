@@ -1,0 +1,145 @@
+# OUU example: minimise objective function whilst constraining for the 90% probability of the sum of constraints being <= 0 under uncertainty.
+
+# Dakota Input File: ouu.in
+# Usage:
+#   dakota -i ouu.in -o ouu.out
+# Might require > outfile.out (not everything always in outfile otherwise)
+
+environment
+  # Define which method leads the study
+  top_method_pointer = 'opt_method'
+  # HDF5 output
+  results_output
+    # Responses not in h5 output! Use -o option instead: only thing that contains results!
+    # hdf5 
+    # text Doesn't work either: blank!
+    results_output_file "responses"
+
+#######################################
+# Outer optimisation
+#######################################
+method
+  id_method = "opt_method"
+  # Requires licence
+  # npsol_sqp
+  conmin_mfd
+    convergence_tolerance = 1.e-1
+    model_pointer = 'opt_model'
+
+model
+  id_model = 'opt_model'
+  nested
+    sub_method_pointer = 'uq'
+    # Variables
+    # What inner vars the outer vars map to
+    # i.e. first outer var maps to "x"
+    primary_variable_mapping = "rmajor"
+    # secondary_variable_mapping corresponds to type of primary variable (e.g. mean, std, etc.)
+    # Not required if not a distribution
+    
+    # Responses
+    # From inner model, use probability that sum of constraints < 0 as response
+    # [mean, std, probability] for each response
+    
+    # Objective function: mean value of obj_func
+    primary_response_mapping =  1 0 0 0 0 0
+    
+    # Constraints: use probability of constraint sum < 0
+    secondary_response_mapping = 0 0 0 0 0 1
+
+  variables_pointer  = 'opt_vars'
+  responses_pointer  = 'opt_responses'
+
+# Design variables
+variables
+  id_variables = 'opt_vars'
+  continuous_design = 1
+    initial_point    8.0   
+    lower_bounds     8.0   
+    upper_bounds     9.0    
+    descriptors      "rmajor"    
+
+responses
+  id_responses = 'opt_responses'
+  # Constrained opt: minimise objective function, subject to 90% probability of constraint sum < 0
+  objective_functions = 1
+  
+  # Constrain with probability
+  # Is this the reliability measure?
+  # 90% probability of constraint sum being feasible
+  nonlinear_inequality_constraints = 1
+    # TODO check this number: is this the right way around for 90%?
+    # Probability level for con sum: risk
+    nonlinear_inequality_lower_bounds = 0.90
+    # Weirdly, this needs to be specified, as upper bounds defaults to 0.0
+    nonlinear_inequality_upper_bounds = 1.0
+  
+  descriptors "norm_objf" "rms_vio_constr_res"
+  
+  numerical_gradients
+    method_source dakota
+    interval_type central
+    fd_step_size = 1.e-1
+  no_hessians
+
+#######################################
+# Inner UQ
+#######################################
+# Local reliability study
+method
+  id_method = "uq"
+  local_reliability
+    model_pointer = "uq_model"
+    # mpp_search no_approx
+    # Calculate statistics on objective function and constraint sum
+    # Mean objective function, probability of constraint sum < 0
+    response_levels = 0.0 0.0
+
+model
+  id_model = "uq_model"
+  single
+    interface_pointer = "uq_interface"
+  variables_pointer = "uq_vars"
+  responses_pointer = "uq_responses"
+
+variables
+  id_variables = "uq_vars"
+  # continuous_interval_uncertain = 2 # appears to not be supported: weird error
+  # wants "continuous variables"
+  
+  # Design vars from outer optimisation
+  continuous_design = 1
+    descriptors = "rmajor"
+  
+  # Uncertain vars only in inner UQ model
+  uniform_uncertain = 1
+    lower_bounds      1.0e-5 
+    upper_bounds      1.0e-4
+    descriptors       "fimp_14" 
+
+# Define interface to Process
+interface
+  id_interface = "uq_interface"
+  fork
+    labeled
+    analysis_drivers = 'python process_driver.py'
+    parameters_file = 'params.in'
+    results_file    = 'responses.out'
+    work_directory named "runs/run"
+      # Debug
+      # directory_tag directory_save # Keep individual run dirs
+      # file_save # save Dakota .in and .out files
+      link_files = "run_dir_template/*"
+    # Always request full data
+    # deactivate active_set_vector 
+
+responses
+  id_responses = "uq_responses"
+  response_functions = 2
+  # Sum of constraints
+  descriptors "norm_objf" "rms_vio_constr_res"
+  numerical_gradients
+    method_source dakota
+    interval_type central
+    fd_step_size = 1.e-1
+  no_hessians
