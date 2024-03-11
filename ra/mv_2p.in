@@ -1,0 +1,73 @@
+# Perform mean value local reliability study
+# 2 uncertain parameters
+
+# Dakota Input File: local_rel_mv.in
+# Usage:
+#   dakota -i local_rel_mv.in -o <custom_output_file.txt>
+# Single uncertainty, mean value reliability analysis.
+
+environment
+  # HDF5 output
+  results_output
+    # Responses not in h5 output! Use -o option instead: only thing that contains results!
+    # hdf5 
+    # text Doesn't work either: blank!
+    # results summary only: nothing for local reliability
+    # results_output_file "summary_results"
+    # full output data
+    output_file "mv_2p_results.txt"
+  # Nothing created for tabular data
+  # tabular_data
+    # tabular_data_file "results.dat"
+
+# Local reliability study
+method
+  local_reliability
+    # TODO Try
+    # mpp_search no_approx
+    # Are constraints > 0?
+    # Only want CDF for constraints (ignore obj_func)
+    response_levels = 0.0 : 0.001 : 0.1
+    num_response_levels = 0 101
+
+variables
+  # continuous_interval_uncertain = 2 # appears to not be supported: weird error
+  # wants "continous variables"
+  
+  # Design vars from outer optimisation
+  # TODO No design vars, only uncertainties?
+  #continuous_design = 1
+    # Design variables at which to perform local reliability analysis
+    #initial_point = 10.0
+    #descriptors = "psepbqarmax"
+
+  # Uncertain vars
+  # Both ranges are modified from normal unc bounds to include soln point
+  uniform_uncertain = 2
+    lower_bounds      5.0e-6  8.7
+    upper_bounds      9.5e-5 10.0
+    descriptors       "fimp_14" "psepbqarmax" 
+
+# Define interface to Rosenbrock script
+interface
+  fork
+    labeled
+    analysis_drivers = 'python process_driver.py'
+    parameters_file = 'params.in'
+    results_file    = 'responses.out'
+    work_directory named "runs/run"
+      # Debug
+      # directory_tag directory_save # Keep individual run dirs
+      # file_save # save Dakota .in and .out files
+      link_files = "run_dir_template/*"
+    # Always request full data
+    # deactivate active_set_vector
+
+responses
+  response_functions = 2
+  descriptors "norm_objf" "rms_vio_constr_res"
+  numerical_gradients
+    method_source dakota
+    interval_type central
+    fd_step_size = 1.e-4
+  no_hessians

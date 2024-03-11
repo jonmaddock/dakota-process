@@ -1,0 +1,72 @@
+# Perform mean value local reliability study
+# 1 uncertain parameter
+# Solution point lies outside lower bound
+
+# Dakota Input File
+# Usage:
+#   dakota -i local_rel_mv.in
+
+environment
+  # HDF5 output
+  results_output
+    # Responses not in h5 output! Use -o option instead: only thing that contains results!
+    # hdf5 
+    # text Doesn't work either: blank!
+    # results summary only: nothing for local reliability
+    # results_output_file "summary_results"
+    # full output data
+    output_file "mv_1p_outside_soln_results.txt"
+  # Nothing created for tabular data
+  # tabular_data
+    # tabular_data_file "results.dat"
+
+# Local reliability study
+method
+  local_reliability
+    # TODO Try
+    # mpp_search no_approx
+    # Are constraints > 0?
+    # Only want CDF for constraints (ignore obj_func)
+    response_levels = 0.0 : 0.001 : 0.1
+    num_response_levels = 0 101
+
+variables
+  # continuous_interval_uncertain = 2 # appears to not be supported: weird error
+  # wants "continous variables"
+  
+  # Design vars
+  # Need filling in in input template
+  # Constants taken from solution point: not uncertain in this study
+  continuous_design = 1
+    initial_point = 10.0
+    descriptors = "psepbqarmax"
+
+  # Uncertain vars
+  uniform_uncertain = 1
+    lower_bounds      1.0e-5  # higher than at solution point
+    upper_bounds      1.0e-4 
+    descriptors       "fimp_14"  
+
+# Define interface to Rosenbrock script
+interface
+  fork
+    labeled
+    analysis_drivers = 'python process_driver.py'
+    parameters_file = 'params.in'
+    results_file    = 'responses.out'
+    work_directory named "runs/run"
+      # Debug
+      # directory_tag directory_save # Keep individual run dirs
+      # file_save # save Dakota .in and .out files
+      link_files = "run_dir_template/*"
+    # Always request full data
+    # deactivate active_set_vector
+
+responses
+  response_functions = 2
+  descriptors "norm_objf" "rms_vio_constr_res"
+  numerical_gradients
+    method_source dakota
+    interval_type central
+    fd_step_size = 1.e-4
+  no_hessians
