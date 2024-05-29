@@ -2,7 +2,7 @@
 
 # Dakota Input File
 # Usage:
-#   dakota -i morris_3p.in > morris_3p_summary.out
+#   dakota -i morris_3p.in > morris_summary.out
 
 environment
   # Summary output
@@ -10,9 +10,9 @@ environment
     # Doesn't output anything
     # results_output_file "summary"
   # full output data
-  output_file "morris_3p.out"
+  # output_file "morris.out" # Doesn't contain result summary
   tabular_data
-    tabular_data_file "morris_3p.dat"
+    tabular_data_file "morris.dat"
   # Nothing includes summary data: need to redirect stdout for summary result
 
 # IA study
@@ -31,12 +31,14 @@ variables
 interface
   fork
     labeled
-    analysis_drivers = 'python process_driver.py'
+    analysis_drivers = 'python process_driver.py lt_sol.template'
     parameters_file = 'params.in'
     results_file    = 'responses.out'
-    work_directory named "runs/run"
+    work_directory 
+      named "runs/run"
+      directory_tag # Keep run dirs unique: required for parallelism
       # Debug
-      # directory_tag directory_save # Keep individual run dirs
+      # directory_save # Keep individual run dirs
       # file_save # save Dakota .in and .out files
       link_files = "run_dir_template/*"
 

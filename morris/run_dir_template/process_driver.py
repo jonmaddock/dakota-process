@@ -114,13 +114,12 @@ class MfileDecoder:
         return processed_data
 
 
-def main(params_filename: str, results_filename: str):
+def main(params_filename: str, results_filename: str, input_template: str):
     # Pre-processing
     # Substitute parameters from Dakota's parameters file (params_filename) into the
     # template, writing the IN.DAT file
     # pyprepro pre-processing tool lives in /opt/Dakota/bin, on PATH
     # Wants to be called via command line (requires own args)
-    input_template = "lt_sol.template"
     input_file = "IN.DAT"  # result of processing template
     subprocess.run(
         [
@@ -151,6 +150,11 @@ def main(params_filename: str, results_filename: str):
 if __name__ == "__main__":
     # The first and second command line arguments to the script are the
     # names of the Dakota parameters and results files
-    params_filename = sys.argv[1]
-    results_filename = sys.argv[2]
-    main(params_filename, results_filename)
+    input_template = sys.argv[1]
+    params_filename = sys.argv[2]
+    results_filename = sys.argv[3]
+    main(
+        params_filename=params_filename,
+        results_filename=results_filename,
+        input_template=input_template,
+    )
