@@ -35,7 +35,7 @@ interface
     parameters_file = 'params.in'
     results_file    = 'responses.out'
     work_directory 
-      named "runs/run"
+      named "lt_runs/run"
       directory_tag # Keep run dirs unique: required for parallelism
       # Debug
       # directory_save # Keep individual run dirs
