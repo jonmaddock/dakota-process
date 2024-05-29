@@ -1,0 +1,49 @@
+# Interval analysis on 3 uncertain parameters
+
+# Dakota Input File
+# Usage:
+#   dakota -i morris_lt_max_net_elec.in > morris_lt_max_net_elec_summary.out
+
+environment
+  # Summary output
+  # results_output
+    # Doesn't output anything
+    # results_output_file "summary"
+  # full output data
+  # output_file "morris.out" # Doesn't contain result summary
+  tabular_data
+    tabular_data_file "morris_lt_max_net_elec.dat"
+  # Nothing includes summary data: need to redirect stdout for summary result
+
+# IA study
+method
+  psuade_moat
+    seed = 1234567
+    samples = 500
+    partitions = 3
+
+variables
+  continuous_design = 21
+    descriptors   "fdene"  "hfact"  "coreradius"  "fimp_2"  "fimp_14"  "psepbqarmax"  "flhthresh"  "cboot"  "peakfactrad"  "kappa"  "etaech"  "feffcd"  "etath"  "etaiso"  "boundl_18"  "pinjalw"  "alstroh"  "sig_tf_wp_max"  "aspect"  "boundu_2"  "triang"
+    lower_bounds      1.1      1.0          0.45   0.085  1.0e-5               8.7         0.85     0.95            2.0      1.8       0.3       0.5     0.36      0.75         3.25       51.0  6.0e8      5.2e8                 3.0        11.0       0.4
+    upper_bounds      1.3      1.2          0.75   0.115  1.0e-4               9.7         1.15     1.05            3.5      1.9       0.5       5.0     0.4       0.95         3.75       61.0  7.2e8      6.4e8                 3.2        12.0       0.6
+
+interface
+  fork
+    labeled
+    analysis_drivers = 'python process_driver.py lt_max_net_elec_sol.template'
+    parameters_file = 'params.in'
+    results_file    = 'responses.out'
+    work_directory 
+      named "runs/run"
+      directory_tag # Keep run dirs unique: required for parallelism
+      # Debug
+      # directory_save # Keep individual run dirs
+      # file_save # save Dakota .in and .out files
+      link_files = "run_dir_template/*"
+
+responses
+  response_functions = 1
+  descriptors "w"
+  no_gradients
+  no_hessians
