@@ -5,3 +5,4 @@ SIG_TF.json
 *.log
 *.dat
 *.tex
+*.out
