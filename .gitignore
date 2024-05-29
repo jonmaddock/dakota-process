@@ -3,3 +3,4 @@ runs/
 *.txt
 SIG_TF.json
 *.log
+*.dat
