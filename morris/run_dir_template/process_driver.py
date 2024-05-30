@@ -53,11 +53,6 @@ class MfileDecoder:
         Dict[str, float]
             Processed output dictionary
         """
-        # All responses to input to Dakota
-        responses = {}
-        # Add objective function to responses dict
-        # responses = {"norm_objf": raw_data["norm_objf"]}
-
         # Extract constraints from raw_data dict
         # Find all equality and inequality constraint keys
         eq_re = re.compile(r"eq_con\d{3}")
@@ -70,26 +65,22 @@ class MfileDecoder:
             eq_constrs_key: raw_data[eq_constrs_key]
             for eq_constrs_key in eq_constrs_keys
         }
-        ineq_constrs_dict = {
-            ineq_constrs_key: raw_data[ineq_constrs_key]
-            for ineq_constrs_key in ineq_constrs_keys
-        }
-
-        # Merge individual eq and ineq constraint values
-        # TODO Withold individual constraint info for now to simplify Dakota responses:
-        # Dakota errors if extraneous data in responses.out
-        # Just include norm_objf and rms_vio_constr_res
-        # responses = responses | eq_constrs_dict | ineq_constrs_dict
-
-        # Create arrays from constraints dicts
         # Process satisfied con: c > 0
         # Everyone else satisfied con: c < 0
         # Flip sign to agree with standard
-        ineq_constrs = -np.array(list(ineq_constrs_dict.values()))
+        ineq_constrs_dict = {
+            ineq_constrs_key: -raw_data[ineq_constrs_key]
+            for ineq_constrs_key in ineq_constrs_keys
+        }
 
-        # Use w metric: most violated inequality constraint
+        # Use w metric (worst-case performance function): most violated inequality constraint
+        ineq_constrs = np.array(list(ineq_constrs_dict.values()))
         w = np.max(ineq_constrs)
-        responses["w"] = w
+        responses = {"w": w}
+
+        # Responses to input to Dakota
+        # Dakota errors if extraneous data in responses.out, so only add what's required
+        responses = responses | eq_constrs_dict | ineq_constrs_dict
 
         return responses
 

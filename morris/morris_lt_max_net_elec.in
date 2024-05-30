@@ -37,13 +37,14 @@ interface
     work_directory 
       named "lt_max_net_elec_runs/run"
       directory_tag # Keep run dirs unique: required for parallelism
+      link_files = "run_dir_template/*"
+      
       # Debug
       # directory_save # Keep individual run dirs
       # file_save # save Dakota .in and .out files
-      link_files = "run_dir_template/*"
 
 responses
-  response_functions = 1
-  descriptors "w"
+  response_functions = 27
+  descriptors "w" "eq_con001" "eq_con002" "eq_con011" "ineq_con005" "ineq_con008" "ineq_con009" "ineq_con013" "ineq_con015" "ineq_con030" "ineq_con016" "ineq_con024" "ineq_con025" "ineq_con026" "ineq_con027" "ineq_con033" "ineq_con034" "ineq_con035" "ineq_con036" "ineq_con060" "ineq_con062" "ineq_con065" "ineq_con072" "ineq_con081" "ineq_con068" "ineq_con031" "ineq_con032"
   no_gradients
   no_hessians
