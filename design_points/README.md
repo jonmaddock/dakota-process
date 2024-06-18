@@ -1,8 +1,9 @@
-# large_tokamak solution point
+# Large Tokamak (LT) design points
 
-Run the `large-tokamak` regression input file, and produce a converged mfile. Then convert this solution to an input file (`*sol_IN.DAT`). Then, add
-```
-* Once through only
-ioptimz  = -2 * no optimisation
-```
-to the `*sol_IN.DAT` to convert it to a once-through, non-optimising run. This can then be used in reliability analysis or optimisation under uncertainty studies.
+- `lt_orig_IN.DAT`: The original large tokamak regression test input file from Process, which uses all equality constraints (f-values)
+- `lt_IN.DAT`: The same file, but converted to inequality and equality constraints (no f-values), using the `prep_sol_for_uq.ipynb` notebook
+- `lt_MFILE.DAT`: The optimised solution of the inequality-constrained large tokamak
+- `lt_sol_IN.DAT`: Non-optimising (once through) large tokamak input file, with the `lt_MFILE.DAT` solution as the initial optimisation parameter vector
+- `lt_sol_MFILE.DAT`: The output of the non-optimising large tokamak solution input
+
+`lt_sol_IN.DAT` is the solution vector expressed as an input file, and can be used as a template for UQ studies around that design point.
