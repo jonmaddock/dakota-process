@@ -7,3 +7,6 @@
 - `lt_sol_MFILE.DAT`: The output of the non-optimising large tokamak solution input
 
 `lt_sol_IN.DAT` is the solution vector expressed as an input file, and can be used as a template for UQ studies around that design point.
+
+- `lt_max_net_elec_IN.DAT`: inequality problem for maximising net electric power (no f-values).
+- `lt_max_net_elec_MFILE.DAT`: solution for the above (found via MC study on CSD3)
