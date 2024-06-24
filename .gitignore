@@ -4,3 +4,4 @@ runs/
 SIG_TF.json
 *.log
 *.dat
+*.tex
