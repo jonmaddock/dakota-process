@@ -35,7 +35,7 @@ interface
     parameters_file = 'params.in'
     results_file    = 'responses.out'
     work_directory 
-      named "lt_max_net_elec_runs/run"
+      named "runs/lt_max_net_elec/run"
       directory_tag # Keep run dirs unique: required for parallelism
       link_files = "../run_dir_template/*"
       
