@@ -80,7 +80,19 @@ class MfileDecoder:
 
         # Responses to input to Dakota
         # Dakota errors if extraneous data in responses.out, so only add what's required
-        responses = responses | eq_constrs_dict | ineq_constrs_dict
+        # Just respond with w for now
+        # responses = responses | eq_constrs_dict | ineq_constrs_dict
+
+        # Find id of con that is w (worst violated)
+        w_con_id = None
+        for constraint, value in ineq_constrs_dict.items():
+            if value == w:
+                w_con_id = constraint
+
+        # Dakota "metadata" works if int/float
+        # Get number from "ineq_con015"
+        matches = re.match(r"\w+con(\d+)", w_con_id)
+        responses["w_con_id"] = matches[1]
 
         return responses
 
