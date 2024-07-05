@@ -12,7 +12,7 @@ environment
   # full output data
   # output_file "morris.out" # Doesn't contain result summary
   tabular_data
-    tabular_data_file "morris_lt_max_net_elec.dat"
+    tabular_data_file "morris_lt_max_q.dat"
   # Nothing includes summary data: need to redirect stdout for summary result
 
 # IA study
