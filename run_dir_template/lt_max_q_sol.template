@@ -443,7 +443,7 @@ tramp    = 500.0 * initial PF coil charge time (s); if pulsed; = tohs
 fdene = {fdene}
 hfact = {hfact}
 coreradius = {coreradius}
-fimp(2) = {fimp_2}
+ralpne = {ralpne}
 fimp(14) = {fimp_14}
 psepbqarmax = {psepbqarmax}
 flhthresh = {flhthresh}
