@@ -1,6 +1,3 @@
-* Define number of equality constraints, and
-* use inequality constraints: corresponding f-values removed
-neqns = 3
 *************************************************************************
 *****                                                               *****
 *****                  Generic large tokamak file                   *****
@@ -19,6 +16,10 @@ minmax = 1
 
 * Error tolerance for VMCON
 epsvmc = 1e-7
+
+* Define number of equality constraints, and
+* use inequality constraints: corresponding f-values removed
+neqns = 3
 
 * Constraint Equations - Consistency Equations *
 ************************************************
@@ -40,43 +41,22 @@ icc = 11
 * Constraint Equations - Limit Equations *
 ******************************************
 
-* Density upper limit *
-*---------------------*
-icc = 5
-ixc = 6 * dene [m-3]
-fdene = 1.2
-dene = 7.5E19
 
-* Neutron wall load upper limit *
-*-------------------------------*
-icc = 8
-fwalld = 1.0
-* wall load limit [MW/m2]
-walalw = 2.0
-
-* Fusion power upper limit *
-*--------------------------*
-
-icc = 9
-* Maximum allowable value fusion power [MW]
-powfmax = 3000
-
-* Burn time lower limit *
-*-----------------------*
-icc = 13 
-* minimum burn time [s]
-tbrnmn = 7200.0
-
-* L-H threshold scaling *
-*-----------------------*
-icc = 15
-boundu(103) = 10.0
 
 * Injection power upper limit *
 *-----------------------------*
 icc = 30
 * Maximum allowable value for injected power [MW]
-pinjalw = 200.0
+pinjalw = 100.0
+
+
+
+
+
+* L-H threshold scaling *
+*-----------------------*
+icc = 15
+boundu(103) = 10.0
 
 * Net electric power lower limit *
 *--------------------------------*
@@ -87,7 +67,7 @@ pnetelin = 400.0
 * Beta upper limit *
 *------------------*
 icc = 24
-fbetatry = 0.5
+fbetatry = 1.0
 
 * Max TF field *
 *--------------*
@@ -99,23 +79,19 @@ bmxlim = 14.0
 *--------------------------------------------------*
 icc = 26
 ixc = 37 * coheof [A/m2]
-boundu(38) = 1.0
 coheof = 1.5E7
-fjohc = 0.6
+fjohc = 1.0
 
 * Central solenoid BOP current density upper limit *
 *--------------------------------------------------*
 icc = 27
-ixc = 41 * fcohbop
-boundu(39) = 1.0
-fjohc0 = 0.6
-fcohbop = 0.9
+fjohc0 = 1.0
+fcohbop = 1.0
 
 * I_op/I_Crit TF coil limit *
 *---------------------------*
 icc = 33
-boundu(50) = 1.0
-fiooic = 0.65
+fiooic = 1.0
 
 * Dump voltage upper limit *
 *--------------------------*
@@ -152,9 +128,8 @@ fmaxvvstress = 1.0
 * CS stress limit *
 *-----------------*
 icc = 72
-foh_stress = 1.0
 * allowable hoop stress in Central Solenoid structural material [Pa]
-alstroh = 7.5D8
+alstroh = 7.2D8
 
 * neped<ne0 *
 *------------------*
@@ -165,7 +140,7 @@ icc = 81
 *------------------*
 
 icc = 68
-psepbqarmax = 10.0
+psepbqarmax = 9.7
 
 * TF coil stress limits *
 *-----------------------*
@@ -173,13 +148,42 @@ psepbqarmax = 10.0
 icc = 31 * TF coil case stress upper limit
 icc = 32 * TF coil conduit stress upper limit
 sig_tf_case_max  = 7.5E8 * Allowable maximum shear stress in TF coil case (Tresca criterion) (Pa)
-sig_tf_wp_max    = 7.5E8 * Allowable maximum shear stress in TF coil conduit (Tresca criterion) (Pa)
+sig_tf_wp_max    = 6.4E8 * Allowable maximum shear stress in TF coil conduit (Tresca criterion) (Pa)
+
+* Density upper limit *
+*---------------------*
+icc = 5
+ixc = 6 * dene [m-3]
+fdene = 1.2
+dene = 7.5E19
+
+* Neutron wall load upper limit *
+*-------------------------------*
+icc = 8
+fwalld = 1.0
+* wall load limit [MW/m2]
+walalw = 2.0
+
+* Fusion power upper limit *
+*--------------------------*
+icc = 9
+* Maximum allowable value fusion power [MW]
+powfmax = 3000
+
+* Burn time lower limit *
+*-----------------------*
+icc = 13 
+* minimum burn time [s]
+tbrnmn = 7200.0
+
+
 
 * Iteration Variables *
 ***********************
 
 * bt [T]
 ixc = 2
+boundu(2) = 12.0
 bt = 5.7
 
 * rmajor [m]
@@ -207,9 +211,9 @@ ixc = 16
 boundl(16) = 0.3
 ohcth = 0.5
 
-* Safety factor near plasma edge
+* q
 ixc = 18
-boundl(18) = 3.0
+boundl(18) = 3.25
 q = 3.5
 
 * Machine bore [m]
@@ -471,7 +475,7 @@ fimp(10) = 0.0
 fimp(11) = 0.0
 fimp(12) = 0.0
 fimp(13) = 0.00038
-fimp(14) = 0.000005
+fimp(14) = 1.0e-5
 
 * Heat transport *
 ******************
@@ -559,9 +563,6 @@ fcuohsu = 0.70
 
 * ITER Nb3Sn parameterisation
 isumatoh = 1
-
-* Fraction of JxB force supported by PF coil case
-sigpfcf = 0.666
 
 * TF Coil *
 ***********
