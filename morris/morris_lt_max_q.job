@@ -60,7 +60,7 @@ conda activate dakota
 application="dakota"
 
 #! Run options for the application:
-options="-i morris_lt_max_net_elec.in > morris_lt_max_net_elec_summary.out 2> err.log"
+options="-i morris_lt_max_q.in > morris_lt_max_q_summary.out 2> err.log"
 
 #! Work directory (i.e. where the job will run):
 workdir="$SLURM_SUBMIT_DIR"  # The value of SLURM_SUBMIT_DIR sets workdir to the directory
