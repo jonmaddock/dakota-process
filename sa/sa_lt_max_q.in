@@ -42,11 +42,11 @@ variables
 interface
   fork
     labeled
-    analysis_drivers = 'python process_driver.py lt_max_net_elec_sol.template'
+    analysis_drivers = 'python process_driver.py lt_max_q_sol.template'
     parameters_file = 'params.in'
     results_file    = 'responses.out'
     work_directory 
-      named "runs/lt_max_net_elec/run"
+      named "runs/lt_max_q/run"
       directory_tag # Keep run dirs unique: required for parallelism
       link_files = "../run_dir_template/*"
       
