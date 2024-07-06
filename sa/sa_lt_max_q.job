@@ -7,7 +7,7 @@
 
 #! sbatch directives begin here ###############################
 #! Name of the job:
-#SBATCH -J dakota-process_sa_lt_max_net_elec
+#SBATCH -J dakota-process_sa_lt_max_q
 #! Which project should be charged:
 #SBATCH -A UKAEA-AP001-CPU
 #SBATCH -p sapphire
@@ -18,7 +18,7 @@
 #! 3380 MiB of memory per CPU.
 #SBATCH --ntasks=100
 #! How much wallclock time will be required?
-#SBATCH --time=01:00:00
+#SBATCH --time=02:00:00
 #! What types of email messages do you wish to receive?
 #SBATCH --mail-type=ALL
 #! Uncomment this to prevent the job from being requeued (e.g. if
@@ -60,7 +60,7 @@ conda activate dakota
 application="dakota"
 
 #! Run options for the application:
-options="-i sa_lt_max_net_elec.in > sa_lt_max_net_elec_summary.out 2> err.log"
+options="-i sa_lt_max_q.in > sa_lt_max_q_summary.out 2> err.log"
 
 #! Work directory (i.e. where the job will run):
 workdir="$SLURM_SUBMIT_DIR"  # The value of SLURM_SUBMIT_DIR sets workdir to the directory
