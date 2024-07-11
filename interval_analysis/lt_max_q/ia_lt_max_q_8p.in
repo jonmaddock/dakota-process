@@ -24,7 +24,7 @@ environment
 # IA study
 method
     global_interval_est ego
-    seed = 1234567
+    samples = 200
 
 variables
   continuous_interval_uncertain = 8

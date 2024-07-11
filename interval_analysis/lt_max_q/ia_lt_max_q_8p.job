@@ -12,13 +12,12 @@
 #SBATCH -A UKAEA-AP001-CPU
 #SBATCH -p sapphire
 #! How many whole nodes should be allocated?
-#SBATCH --nodes=1
 #! How many (MPI) tasks will there be in total? (<= nodes*76)
 #! The Ice Lake (icelake) nodes have 76 CPUs (cores) each and
 #! 3380 MiB of memory per CPU.
-#SBATCH --ntasks=45
+#SBATCH --ntasks=200
 #! How much wallclock time will be required?
-#SBATCH --time=04:00:00
+#SBATCH --time=01:00:00
 #! What types of email messages do you wish to receive?
 #SBATCH --mail-type=ALL
 #! Uncomment this to prevent the job from being requeued (e.g. if
