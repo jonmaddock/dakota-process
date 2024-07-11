@@ -26,7 +26,7 @@ method
     global_interval_est ego
     # seed = 1234567
     # convergence_tolerance = 1.0e-5
-    samples = 200
+    samples = 500
 
 variables
   continuous_interval_uncertain = 8
@@ -47,9 +47,9 @@ interface
     parameters_file = 'params.in'
     results_file    = 'responses.out'
     work_directory 
-      named "runs/lt/run"
+      named "runs/run"
       directory_tag # Keep run dirs unique: required for parallelism
-      link_files = "../run_dir_template/*"
+      link_files = "../../run_dir_template/*"
       
       # Debug
       # directory_save # Keep individual run dirs
