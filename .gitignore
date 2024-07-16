@@ -7,3 +7,4 @@ SIG_TF.json
 *.tex
 *.out
 *.pdf
+*.cpython*
