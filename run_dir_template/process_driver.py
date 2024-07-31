@@ -81,7 +81,7 @@ class MfileDecoder:
         # Responses to input to Dakota
         # Dakota errors if extraneous data in responses.out, so only add what's required
         # Just respond with w for now
-        # responses = responses | eq_constrs_dict | ineq_constrs_dict
+        responses = responses | eq_constrs_dict | ineq_constrs_dict
 
         # Find id of con that is w (worst violated)
         w_con_id = None
