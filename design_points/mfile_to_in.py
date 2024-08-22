@@ -36,6 +36,7 @@ ignoring ones that are known not to be f-values.
 
 # List of optimisation param numbers that are f-values
 F_VALUE_OPT_PARAM_NUMBERS = [
+    9,
     14,
     15,
     21,
@@ -117,6 +118,19 @@ STARTS_WITH_F_BUT_NOT_F_VALUE_NAMES = [
     "fcutfsu",
     "fimp",
     "fgwped",
+    "fwcoolant",
+    "fwinlet",
+    "fwoutlet",
+    "fw_channel_length",
+    "fgwsep",
+    "ftar",
+    "f_vforce_inboard",
+    "fseppc",
+    "fwbsshape",
+    "fw_armour_thickness",
+    "fw_wall",
+    "fcontng",
+    "fkind",
 ]
 
 
@@ -329,9 +343,11 @@ def remove_f_values(
     opt_param_beginning_with_f_re = re.compile(r"ixc\s*=\s*(\d+)\s*\*\s*(f\w+)")
 
     # Any line starting with f (could be f-value value definition)
-    line_starting_with_f_re = re.compile(r"^(f\w*)")
+    possible_f_value_init = re.compile(r"^(f\w+)\s*=\s*(\d*\.?\d*)")
 
     for line in lines_with_f_values:
+        # Search for known opt param numbers that are f-values
+        # e.g. icx = 23
         matches = opt_param_re.match(line)
         if matches is not None:
             # Found an opt param line
@@ -346,6 +362,7 @@ def remove_f_values(
 
         # Check if line contains opt param beginning with an f:
         # Not known f-value (would be in numbers list), but suspicious as could be
+        # e.g. ixc = 23 * fdene
         matches = opt_param_beginning_with_f_re.match(line)
         if matches is not None:
             # Check name not on known "not an f-value" list
@@ -357,12 +374,20 @@ def remove_f_values(
         # Optionally, remove any f-value initialisations
         # e.g. `fthresh = 0.8`
         if remove_f_value_inits:
-            matches = line_starting_with_f_re.match(line)
+            matches = possible_f_value_init.match(line)
             if matches is not None:
                 if matches.group(1) not in STARTS_WITH_F_BUT_NOT_F_VALUE_NAMES:
-                    # Found f-value initialisation: drop the line
-                    f_value_init_removal_count += 1
-                    continue
+                    # Found possible f-value initialisation: check if >1.0
+                    if float(matches.group(2)) <= 1.0:
+                        # Drop the line
+                        print(f"f-value initialisation for {matches.group(1)} removed")
+                        f_value_init_removal_count += 1
+                        continue
+                    else:
+                        # Keep the f-value if >1.0: relaxes inequality constraint beyond min or max
+                        print(
+                            f"Keeping f-value {matches.group(1)} with value {matches.group(2)}"
+                        )
 
         # Non f-value opt param, (optionally not) f-value initialisation or other
         # line: keep
