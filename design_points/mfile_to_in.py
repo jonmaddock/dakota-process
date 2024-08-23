@@ -380,13 +380,15 @@ def remove_f_values(
                     # Found possible f-value initialisation: check if >1.0
                     if float(matches.group(2)) <= 1.0:
                         # Drop the line
-                        print(f"f-value initialisation for {matches.group(1)} removed")
+                        print(
+                            f"Removing f-value initialisation for {matches.group(1)} = {matches.group(2)}"
+                        )
                         f_value_init_removal_count += 1
                         continue
                     else:
                         # Keep the f-value if >1.0: relaxes inequality constraint beyond min or max
                         print(
-                            f"Keeping f-value {matches.group(1)} with value {matches.group(2)}"
+                            f"Keeping f-value initialisation for {matches.group(1)} = {matches.group(2)}"
                         )
 
         # Non f-value opt param, (optionally not) f-value initialisation or other
