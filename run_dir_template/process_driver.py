@@ -7,6 +7,7 @@ from typing import Dict, Any
 from process.io.mfile import MFile
 import regex as re
 from pathlib import Path
+import argparse
 
 
 class MfileDecoder:
@@ -38,7 +39,9 @@ class MfileDecoder:
 
         return mfile_dict
 
-    def _process_data(self, raw_data: Dict[str, Any]) -> Dict[str, float]:
+    def _process_data(
+        self, raw_data: Dict[str, Any], all_cons: bool
+    ) -> Dict[str, float]:
         """Perform any required processing of raw mfile data dict.
 
         May include filtering for desired responses.
@@ -47,6 +50,8 @@ class MfileDecoder:
         ----------
         raw_data : Dict[str, Any]
             Entire raw output dictionary
+        all_cons : bool
+            Include all constraint values in responses if true, not just w
 
         Returns
         -------
@@ -79,9 +84,9 @@ class MfileDecoder:
         responses = {"w": w}
 
         # Responses to input to Dakota
-        # Dakota errors if extraneous data in responses.out, so only add what's required
-        # Just respond with w for now
-        responses = responses | eq_constrs_dict | ineq_constrs_dict
+        # Dakota errors if extraneous data in responses.out, so only add what's required for this study
+        if all_cons:
+            responses = responses | eq_constrs_dict | ineq_constrs_dict
 
         # Find id of con that is w (worst violated)
         w_con_id = None
@@ -96,8 +101,13 @@ class MfileDecoder:
 
         return responses
 
-    def get_responses(self) -> Dict[str, float]:
+    def get_responses(self, all_cons) -> Dict[str, float]:
         """Parse mfile, process it and return dict to Dakota.
+
+        Parameters
+        ----------
+        all_cons : bool
+            Include all constraint values in responses if true, not just w
 
         Returns
         -------
@@ -112,12 +122,14 @@ class MfileDecoder:
 
         raw_data = self._get_data()
         # Perform any required processing of raw data
-        processed_data = self._process_data(raw_data)
+        processed_data = self._process_data(raw_data, all_cons=all_cons)
 
         return processed_data
 
 
-def main(params_filename: str, results_filename: str, input_template: str):
+def main(
+    params_filename: str, results_filename: str, input_template: str, all_cons: bool
+):
     # Pre-processing
     # Substitute parameters from Dakota's parameters file (params_filename) into the
     # template, writing the IN.DAT file
@@ -141,7 +153,7 @@ def main(params_filename: str, results_filename: str, input_template: str):
     # Post-processing
     # Extract responses from MFILE
     mfile_decoder = MfileDecoder("MFILE.DAT")
-    responses = mfile_decoder.get_responses()
+    responses = mfile_decoder.get_responses(all_cons=all_cons)
 
     # Write Dakota response file
     # Dakota interprets "var" as a function value, "[var]" as a gradient
@@ -151,13 +163,28 @@ def main(params_filename: str, results_filename: str, input_template: str):
 
 
 if __name__ == "__main__":
-    # The first and second command line arguments to the script are the
+    # The first and second positional command line arguments to the script are the
     # names of the Dakota parameters and results files
-    input_template = sys.argv[1]
-    params_filename = sys.argv[2]
-    results_filename = sys.argv[3]
+    parser = argparse.ArgumentParser()
+    parser.add_argument("params_filename")
+    parser.add_argument("results_filename")
+    parser.add_argument(
+        "--input-template",
+        metavar="input_template",
+        type=str,
+        help="The input template path",
+    )
+    parser.add_argument(
+        "--all-cons",
+        action="store_true",
+        help="Include full constraint values in responses",
+        default=False,
+    )
+    args = parser.parse_args()
+
     main(
-        params_filename=params_filename,
-        results_filename=results_filename,
-        input_template=input_template,
+        params_filename=args.params_filename,
+        results_filename=args.results_filename,
+        input_template=args.input_template,
+        all_cons=args.all_cons,
     )
